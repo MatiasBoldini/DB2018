@@ -1,21 +1,21 @@
 1)
 
-SELECT DISTINCT first_name , last_name 
+SELECT first_name , last_name 
 FROM actor a1
 WHERE EXISTS (SELECT *
-		FROM actor a2
-		WHERE a1.last_name = a2.last_name AND a1.actor_id <> a2.actor_id)
-		ORDER BY last_name;
+		          FROM actor a2
+		          WHERE a1.last_name = a2.last_name AND a1.actor_id <> a2.actor_id)
+ORDER BY last_name;
 
 
 2)
 
-SELECT *
+SELECT first_name, lasst_name
 FROM actor a1
 WHERE NOT EXISTS (SELECT *
                     FROM film_actor a2
                     WHERE a1.actor_id = a2.actor_id)
-                    ORDER BY actor_id;
+ORDER BY actor_id;
         
         
 3)
@@ -44,7 +44,7 @@ WHERE EXISTS (SELECT *
 
 5)
 
-SELECT *
+SELECT DISTINCT *
 FROM actor b1
 WHERE EXISTS(SELECT *
                 FROM film_actor b2, film b3
@@ -58,14 +58,15 @@ FROM actor d1
 WHERE EXISTS(SELECT *
                 FROM film_actor d2, film d3
                 WHERE d1.actor_id = d2.actor_id AND d2.film_id = d3.film_id AND d3.title IN ('BETRAYED REAR') AND d3.title NOT IN ('CATCH AMISTAD'))
-                
+      
+      
 7)
 
-SELECT e1.actor_id, e1.first_name, e1.last_name
+SELECT *
 	FROM actor e1
 		WHERE EXISTS(SELECT * 
 			             FROM film_actor e2, film e3 
 				         WHERE e2.actor_id = e1.actor_id AND e3.film_id = e2.film_id AND e3.title = 'BETRAYED REAR')
 		AND EXISTS (SELECT * 
-			            FROM film_actor e2, film e3 
-				        WHERE e2.actor_id = e1.actor_id AND e3.film_id = e2.film_id AND e3.title = 'CATCH AMISTAD')
+			             FROM film_actor e2, film e3 
+				         WHERE e2.actor_id = e1.actor_id AND e3.film_id = e2.film_id AND e3.title = 'CATCH AMISTAD')
