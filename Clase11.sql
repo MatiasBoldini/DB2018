@@ -40,3 +40,25 @@ ORDER BY amount DESC;
 SELECT film_id, title
 FROM film
 WHERE film_id NOT IN (SELECT film_id FROM inventory);
+
+
+5)
+
+SELECT film.title, inventory_id
+FROM film 
+	INNER JOIN inventory USING (film_id)
+	LEFT JOIN rental USING (inventory_id)
+WHERE rental_id IS NULL;
+
+
+6)
+
+SELECT CONCAT(customer.last_name, " ",customer.first_name) as Name, customer.store_id, film.title, rental.rental_date, rental.return_date
+FROM rental 
+	INNER JOIN customer  USING (customer_id)
+	INNER JOIN inventory USING (inventory_id)
+	INNER JOIN film USING (film_id)
+ORDER BY store_id, customer.last_name;
+
+7)
+
