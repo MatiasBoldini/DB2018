@@ -93,3 +93,13 @@ FROM film
 GROUP BY actor
 ORDER BY total_film DESC
 LIMIT 1;
+
+
+10)
+
+SELECT category.name, AVG(`length`) AS average
+FROM film
+    INNER JOIN film_category USING(film_id)
+    INNER JOIN category USING(category_id)
+GROUP BY category.name
+ORDER BY average DESC;
