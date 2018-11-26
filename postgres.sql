@@ -88,7 +88,8 @@ GROUP BY dimproduct.englishproductname, dimdate.calendaryear;
 SELECT calendaryear, monthnumberofyear, sum(salesamount::numeric) AS monto
 FROM factinternetsales
 INNER JOIN dimdate ON factinternetsales.duedatekey=dimdate.datekey
-GROUP BY ROLLUP (calendaryear, monthnumberofyear);
+GROUP BY ROLLUP (calendaryear, monthnumberofyear)
+ORDER by (calendaryear, monthnumberofyear);
 
 
 
