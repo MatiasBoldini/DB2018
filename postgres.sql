@@ -1,0 +1,91 @@
+
+-1 Retrieve Internet Sales Amount As Per Customer. In other words, we can say show the 
+--Detail of amount spent by customers during purchase from Internet.
+
+
+SELECT lastname, sum(salesamount) 
+FROM factinternetsales 
+INNER JOIN dimcustomer USING (customerkey)
+WHERE dimcustomer.customerkey = factinternetsales.customerkey
+GROUP BY lastname
+ORDER BY lastname;
+
+
+
+--2 View Internet Sales amount detail between year 2005 to 2008
+
+
+SELECT sum(salesamount) 
+FROM factinternetsales
+INNER JOIN dimdate ON factinternetsales.duedatekey=dimdate.datekey
+WHERE calendaryear BETWEEN '2005' and '2008'
+;
+
+
+
+--3 View Internet Sales by product category and sub-category.
+
+
+SELECT sum(salesamount), dimproductcategory.englishproductcategoryname AS "Categoria",  dimproductsubcategory.englishproductsubcategoryname AS "SubCategoria"
+FROM factinternetsales
+INNER JOIN dimproduct USING(productkey)
+INNER JOIN dimproductcategory USING(productcategorykey)
+INNER JOIN dimproductsubcategory USING(productsubcategorykey)
+GROUP BY category, subcategory;
+
+
+
+--4 View Internet Sales and Freight Cost by product category, sub-category and product.
+
+
+SELECT sum(salesamount) AS "Ventas"  ,sum(freight) AS "Carga de Pago", dimproductcategory.englishproductcategoryname AS "Categoria",  dimproduct.productsubcategorykey AS "SubCategoria", dimproduct.englishproductname AS "Producto"
+FROM factinternetsales
+INNER JOIN dimproduct USING (productkey)
+INNER JOIN dimproductcategory USING (productcategorykey)
+INNER JOIN dimproductsubcategory USING (productsubcategorykey)
+GROUP BY dimproductcategory.spanishproductcategoryname , dimproduct.productsubcategorykey,dimproduct.englishproductname;
+
+
+
+--5 Retrieve only those products whose names begin with “A” and Internet sales amount <5000.
+
+
+SELECT spanishproductname ,salesamount 
+FROM factinternetsales
+INNER JOIN dimproduct USING (productkey)
+WHERE spanishproductname LIKE 'a%'
+AND salesamount::numeric < 5000
+GROUP BY spanishproductname , salesamount;
+
+
+
+--6 What is sales amount in all the countries?? 
+
+
+SELECT sum(salesamount), dimsalesterritory.salesterritorycountry AS "PAIS"
+FROM factinternetsales
+INNER JOIN dimsalesterritory USING(salesterritorykey)
+GROUP BY dimsalesterritory.salesterritorycountry
+GROUP BY dimsalesterritory.salesterritorycountry;
+
+
+
+--7 Retrieve all the products in descending order of their Internet sales amount of year 2007 
+
+
+SELECT dimproduct.englishproductname AS "PRODUCTO", sum(salesamount) AS "TOTAL", dimdate.calendaryear AS "AÑO"
+FROM factinternetsales
+INNER JOIN dimproduct USING (productkey)
+INNER JOIN dimdate ON factinternetsales.duedatekey=dimdate.datekey
+WHERE calendaryear = 2007
+GROUP BY dimproduct.englishproductname, dimdate.calendaryear;
+
+
+
+--8 Generate a report with Internet Sales sub total, grand total per year and month.
+
+
+SELECT dimdate.calendaryear AAS "AÑO", dimdate.englishmonthname AS "MES", sum(salesamount)
+FROM factinternetsales
+INNER JOIN dimdate ON factinternetsales.duedatekey = dimdate.datekey
+GROUP BY ROLLUP (dimdate.calendaryear, dimdate.monthnumberofyear);
