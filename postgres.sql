@@ -18,32 +18,32 @@ ORDER BY lastname;
 SELECT sum(salesamount) 
 FROM factinternetsales
 INNER JOIN dimdate ON factinternetsales.duedatekey=dimdate.datekey
-WHERE calendaryear BETWEEN '2005' and '2008'
-;
+WHERE calendaryear BETWEEN '2005' and '2008';
 
 
 
 -- 3 View Internet Sales by product category and sub-category.
 
 
-SELECT sum(salesamount), dimproductcategory.englishproductcategoryname AS "Categoria",  dimproductsubcategory.englishproductsubcategoryname AS "SubCategoria"
+SELECT sum(salesamount) , spanishproductcategoryname , spanishproductsubcategoryname
 FROM factinternetsales
-INNER JOIN dimproduct USING(productkey)
-INNER JOIN dimproductcategory USING(productcategorykey)
-INNER JOIN dimproductsubcategory USING(productsubcategorykey)
-GROUP BY category, subcategory;
+INNER JOIN dimproduct USING (productkey)
+INNER JOIN dimproductsubcategory USING (productsubcategorykey)
+INNER JOIN dimproductcategory USING (productcategorykey)
+GROUP BY spanishproductcategoryname , spanishproductsubcategoryname;
 
 
 
 -- 4 View Internet Sales and Freight Cost by product category, sub-category and product.
 
 
-SELECT sum(salesamount) AS "Ventas"  ,sum(freight) AS "Carga de Pago", dimproductcategory.englishproductcategoryname AS "Categoria",  dimproduct.productsubcategorykey AS "SubCategoria", dimproduct.englishproductname AS "Producto"
-FROM factinternetsales
-INNER JOIN dimproduct USING (productkey)
-INNER JOIN dimproductcategory USING (productcategorykey)
-INNER JOIN dimproductsubcategory USING (productsubcategorykey)
-GROUP BY dimproductcategory.spanishproductcategoryname , dimproduct.productsubcategorykey,dimproduct.englishproductname;
+SELECT sum(salesamount) AS "Total de ventas"  ,sum(freight) AS "Cargo de envio", 
+spanishproductcategoryname , spanishproductsubcategoryname, spanishproductname
+from factinternetsales
+inner join dimproduct using (productkey)
+inner join dimproductsubcategory using (productsubcategorykey)
+inner join dimproductcategory using (productcategorykey)
+group by spanishproductcategoryname , spanishproductsubcategoryname,spanishproductname;
 
 
 
@@ -66,7 +66,7 @@ SELECT sum(salesamount), dimsalesterritory.salesterritorycountry AS "PAIS"
 FROM factinternetsales
 INNER JOIN dimsalesterritory USING(salesterritorykey)
 GROUP BY dimsalesterritory.salesterritorycountry
-GROUP BY dimsalesterritory.salesterritorycountry;
+ORDER BY dimsalesterritory.salesterritorycountry;
 
 
 
@@ -85,10 +85,11 @@ GROUP BY dimproduct.englishproductname, dimdate.calendaryear;
 -- 8 Generate a report with Internet Sales sub total, grand total per year and month.
 
 
-SELECT dimdate.calendaryear AAS "AÑO", dimdate.englishmonthname AS "MES", sum(salesamount)
+SELECT calendaryear, monthnumberofyear, sum(salesamount::numeric) AS monto
 FROM factinternetsales
-INNER JOIN dimdate ON factinternetsales.duedatekey = dimdate.datekey
-GROUP BY ROLLUP (dimdate.calendaryear, dimdate.monthnumberofyear);
+INNER JOIN dimdate ON factinternetsales.duedatekey=dimdate.datekey
+GROUP BY ROLLUP (calendaryear, monthnumberofyear);
+
 
 
 
