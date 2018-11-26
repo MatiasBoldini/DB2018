@@ -1,6 +1,6 @@
 
--1 Retrieve Internet Sales Amount As Per Customer. In other words, we can say show the 
---Detail of amount spent by customers during purchase from Internet.
+-- 1 Retrieve Internet Sales Amount As Per Customer. In other words, we can say show the 
+-- Detail of amount spent by customers during purchase from Internet.
 
 
 SELECT lastname, sum(salesamount) 
@@ -12,7 +12,7 @@ ORDER BY lastname;
 
 
 
---2 View Internet Sales amount detail between year 2005 to 2008
+-- 2 View Internet Sales amount detail between year 2005 to 2008
 
 
 SELECT sum(salesamount) 
@@ -23,7 +23,7 @@ WHERE calendaryear BETWEEN '2005' and '2008'
 
 
 
---3 View Internet Sales by product category and sub-category.
+-- 3 View Internet Sales by product category and sub-category.
 
 
 SELECT sum(salesamount), dimproductcategory.englishproductcategoryname AS "Categoria",  dimproductsubcategory.englishproductsubcategoryname AS "SubCategoria"
@@ -35,7 +35,7 @@ GROUP BY category, subcategory;
 
 
 
---4 View Internet Sales and Freight Cost by product category, sub-category and product.
+-- 4 View Internet Sales and Freight Cost by product category, sub-category and product.
 
 
 SELECT sum(salesamount) AS "Ventas"  ,sum(freight) AS "Carga de Pago", dimproductcategory.englishproductcategoryname AS "Categoria",  dimproduct.productsubcategorykey AS "SubCategoria", dimproduct.englishproductname AS "Producto"
@@ -47,7 +47,7 @@ GROUP BY dimproductcategory.spanishproductcategoryname , dimproduct.productsubca
 
 
 
---5 Retrieve only those products whose names begin with “A” and Internet sales amount <5000.
+-- 5 Retrieve only those products whose names begin with “A” and Internet sales amount <5000.
 
 
 SELECT spanishproductname ,salesamount 
@@ -59,7 +59,7 @@ GROUP BY spanishproductname , salesamount;
 
 
 
---6 What is sales amount in all the countries?? 
+-- 6 What is sales amount in all the countries?? 
 
 
 SELECT sum(salesamount), dimsalesterritory.salesterritorycountry AS "PAIS"
@@ -70,7 +70,7 @@ GROUP BY dimsalesterritory.salesterritorycountry;
 
 
 
---7 Retrieve all the products in descending order of their Internet sales amount of year 2007 
+-- 7 Retrieve all the products in descending order of their Internet sales amount of year 2007 
 
 
 SELECT dimproduct.englishproductname AS "PRODUCTO", sum(salesamount) AS "TOTAL", dimdate.calendaryear AS "AÑO"
@@ -82,10 +82,26 @@ GROUP BY dimproduct.englishproductname, dimdate.calendaryear;
 
 
 
---8 Generate a report with Internet Sales sub total, grand total per year and month.
+-- 8 Generate a report with Internet Sales sub total, grand total per year and month.
 
 
 SELECT dimdate.calendaryear AAS "AÑO", dimdate.englishmonthname AS "MES", sum(salesamount)
 FROM factinternetsales
 INNER JOIN dimdate ON factinternetsales.duedatekey = dimdate.datekey
 GROUP BY ROLLUP (dimdate.calendaryear, dimdate.monthnumberofyear);
+
+
+
+-- 9 Generate a report with the amount of "Pedals" and "Tires and Tubes" category of products.
+-- in the inventory. Also with the amount of in and outs of each of them on the second half of the year 2006.
+
+
+SELECT englishproductname, count(productkey), sum(unitsin), sum(unitsout) 
+FROM factproductinventory
+INNER JOIN dimproduct dp USING (productkey)
+INNER JOIN dimdate USING(datekey)
+INNER JOIN dimproductsubcategory USING(productsubcategorykey)
+INNER JOIN dimproductcategory USING (productcategorykey)
+WHERE englishproductname LIKE '%Pedal%' OR englishproductname LIKE '%Tire%' 
+AND fiscalyear = 2006 AND fiscalsemester =2
+GROUP BY englishproductname;
